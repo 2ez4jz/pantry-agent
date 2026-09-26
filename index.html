@@ -3,152 +3,170 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pantry Agent</title>
+  <title>Personal Data Hub</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="topbar">
     <div>
-      <p class="eyebrow">PERSONAL FOOD SYSTEM</p>
-      <h1>Pantry Agent</h1>
+      <p class="eyebrow">PERSONAL DATA HUB</p>
+      <h1>Health OS</h1>
     </div>
-    <button id="resetDemoBtn" class="ghost">重置 Demo</button>
+    <div class="top-actions">
+      <span id="syncStatus" class="sync">Loading data…</span>
+      <button id="exportBtn" class="ghost">导出本地数据</button>
+    </div>
   </header>
 
+  <nav class="tabs shell">
+    <button class="tab active" data-view="overview">Overview</button>
+    <button class="tab" data-view="nutrition">Nutrition</button>
+    <button class="tab" data-view="activity">Activity</button>
+    <button class="tab" data-view="body">Body</button>
+    <button class="tab" data-view="food">Food</button>
+  </nav>
+
   <main class="shell">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">TODAY</p>
-        <h2>先知道家里有什么，再决定吃什么。</h2>
-        <p class="muted">库存、食谱、营养与饮食记录放在同一个地方。</p>
-      </div>
-      <div class="hero-actions">
-        <button class="primary" data-open="inventoryModal">+ 添加库存</button>
-        <button class="secondary" data-open="mealModal">+ 记录一餐</button>
-      </div>
+    <section id="overview" class="view active">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">TODAY</p>
+          <h2>一个地方，看清每天吃了什么、动了多少、身体怎么变化。</h2>
+          <p class="muted">数据本身保持结构化；Codex / Muse 以后负责录入、整理与分析。</p>
+        </div>
+        <button class="primary" data-open="dailyModal">+ 录入今日数据</button>
+      </section>
+
+      <section id="todayMetrics" class="metrics"></section>
+
+      <section class="grid two">
+        <article class="card">
+          <div class="card-head">
+            <div><p class="eyebrow">30 DAY TREND</p><h3>体重</h3></div>
+            <span class="pill">kg</span>
+          </div>
+          <div id="weightChart" class="chart"></div>
+        </article>
+        <article class="card">
+          <div class="card-head">
+            <div><p class="eyebrow">30 DAY TREND</p><h3>每日摄入</h3></div>
+            <span class="pill">kcal</span>
+          </div>
+          <div id="calorieChart" class="chart"></div>
+        </article>
+      </section>
+
+      <section class="grid two">
+        <article class="card">
+          <div class="card-head"><div><p class="eyebrow">RECENT DAYS</p><h3>每日记录</h3></div></div>
+          <div id="dailyTable"></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><p class="eyebrow">SYSTEM</p><h3>当前数据源</h3></div></div>
+          <div class="source-stack">
+            <div><strong>Repo database</strong><small>data/store.json · 可由 Codex 每天提交</small></div>
+            <div><strong>Local edits</strong><small>浏览器手动输入 · 当前设备即时预览</small></div>
+            <div><strong>Next</strong><small>Muse / Apple Health → 同一套 schema</small></div>
+          </div>
+        </article>
+      </section>
     </section>
 
-    <section class="metrics" id="metrics"></section>
-
-    <section class="grid two">
-      <article class="card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">INVENTORY</p>
-            <h3>当前库存</h3>
-          </div>
-          <button class="text-btn" data-open="inventoryModal">新增</button>
-        </div>
-        <div id="inventoryTable"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">AGENT</p>
-            <h3>今晚吃什么？</h3>
-          </div>
-          <button id="refreshRecipesBtn" class="text-btn">换一组</button>
-        </div>
-        <div id="recipeList" class="recipe-list"></div>
-      </article>
+    <section id="nutrition" class="view">
+      <section class="section-head"><div><p class="eyebrow">NUTRITION</p><h2>摄入记录</h2></div><button class="primary" data-open="mealModal">+ 记录一餐</button></section>
+      <section id="nutritionMetrics" class="metrics"></section>
+      <article class="card"><div class="card-head"><div><h3>最近饮食</h3></div></div><div id="mealLog"></div></article>
     </section>
 
-    <section class="grid two">
-      <article class="card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">MEAL LOG</p>
-            <h3>饮食记录</h3>
-          </div>
-          <button class="text-btn" data-open="mealModal">记录</button>
-        </div>
-        <div id="mealLog"></div>
-      </article>
+    <section id="activity" class="view">
+      <section class="section-head"><div><p class="eyebrow">ACTIVITY</p><h2>运动与活动</h2></div><button class="primary" data-open="workoutModal">+ 记录运动</button></section>
+      <section id="activityMetrics" class="metrics"></section>
+      <article class="card"><div class="card-head"><div><h3>运动记录</h3></div></div><div id="workoutLog"></div></article>
+    </section>
 
-      <article class="card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">IMPORT</p>
-            <h3>快速录入</h3>
-          </div>
-        </div>
-        <div class="import-grid">
-          <button class="import-card" id="imageImportBtn">
-            <span class="icon">◫</span>
-            <strong>图片识别</strong>
-            <small>拍包装 / 小票 / 冰箱</small>
-          </button>
-          <button class="import-card" id="emailImportBtn">
-            <span class="icon">✉</span>
-            <strong>邮箱订单</strong>
-            <small>读取网购买菜订单</small>
-          </button>
-        </div>
-        <p class="note">MVP 当前先保留入口；下一步接入真实图片识别与邮箱订单解析。</p>
-      </article>
+    <section id="body" class="view">
+      <section class="section-head"><div><p class="eyebrow">BODY</p><h2>身体指标</h2></div><button class="primary" data-open="bodyModal">+ 记录指标</button></section>
+      <section id="bodyMetrics" class="metrics"></section>
+      <article class="card"><div class="card-head"><div><h3>指标历史</h3></div></div><div id="bodyLog"></div></article>
+    </section>
+
+    <section id="food" class="view">
+      <section class="section-head"><div><p class="eyebrow">FOOD</p><h2>库存与 Meal Prep</h2></div><button class="primary" data-open="inventoryModal">+ 添加库存</button></section>
+      <section class="grid two">
+        <article class="card"><div class="card-head"><div><h3>当前库存</h3></div></div><div id="inventoryTable"></div></article>
+        <article class="card"><div class="card-head"><div><h3>Meal Prep</h3></div></div><div id="prepTable"></div></article>
+      </section>
     </section>
   </main>
 
-  <dialog id="inventoryModal">
-    <form method="dialog" id="inventoryForm" class="modal">
-      <div class="modal-head">
-        <div>
-          <p class="eyebrow">ADD FOOD</p>
-          <h3>添加库存</h3>
-        </div>
-        <button value="cancel" class="close">×</button>
-      </div>
-      <div class="form-grid">
-        <label>食物名称<input name="name" required placeholder="例如：瘦牛肉碎" /></label>
-        <label>数量<input name="quantity" type="number" step="0.01" required placeholder="900" /></label>
-        <label>单位
-          <select name="unit"><option>g</option><option>kg</option><option>个</option><option>盒</option><option>瓶</option></select>
-        </label>
-        <label>预计保质天数<input name="days" type="number" min="0" value="5" /></label>
-      </div>
-      <p class="section-label">每 100g 营养（可稍后修正）</p>
-      <div class="form-grid four">
-        <label>kcal<input name="kcal" type="number" step="0.1" value="150" /></label>
-        <label>蛋白质<input name="protein" type="number" step="0.1" value="20" /></label>
-        <label>碳水<input name="carbs" type="number" step="0.1" value="0" /></label>
-        <label>脂肪<input name="fat" type="number" step="0.1" value="7" /></label>
-      </div>
-      <menu>
-        <button value="cancel" class="secondary">取消</button>
-        <button type="submit" value="default" class="primary">加入库存</button>
-      </menu>
-    </form>
-  </dialog>
-
-  <dialog id="mealModal">
-    <form method="dialog" id="mealForm" class="modal">
-      <div class="modal-head">
-        <div>
-          <p class="eyebrow">LOG MEAL</p>
-          <h3>记录一餐</h3>
-        </div>
-        <button value="cancel" class="close">×</button>
-      </div>
-      <label>餐次
-        <select name="mealType"><option>早餐</option><option>午餐</option><option selected>晚餐</option><option>加餐</option></select>
-      </label>
-      <div id="mealItems"></div>
-      <button type="button" id="addMealItemBtn" class="secondary wide">+ 添加食物</button>
-      <menu>
-        <button value="cancel" class="secondary">取消</button>
-        <button type="submit" value="default" class="primary">保存并扣库存</button>
-      </menu>
-    </form>
-  </dialog>
-
-  <template id="mealItemTemplate">
-    <div class="meal-item-row">
-      <select class="food-select"></select>
-      <input class="food-amount" type="number" min="0" step="1" placeholder="克数" />
-      <button type="button" class="remove-row">×</button>
+  <dialog id="dailyModal"><form method="dialog" id="dailyForm" class="modal">
+    <div class="modal-head"><div><p class="eyebrow">DAILY ENTRY</p><h3>录入今日数据</h3></div><button value="cancel" class="close">×</button></div>
+    <div class="form-grid three">
+      <label>日期<input name="date" type="date" required /></label>
+      <label>体重 kg<input name="weight" type="number" step="0.1" /></label>
+      <label>VO₂max<input name="vo2max" type="number" step="0.1" /></label>
+      <label>步数<input name="steps" type="number" /></label>
+      <label>运动分钟<input name="exerciseMinutes" type="number" /></label>
+      <label>活动热量 kcal<input name="activeCalories" type="number" /></label>
+      <label>摄入 kcal<input name="calories" type="number" /></label>
+      <label>蛋白质 g<input name="protein" type="number" step="0.1" /></label>
+      <label>睡眠小时<input name="sleepHours" type="number" step="0.1" /></label>
     </div>
-  </template>
+    <menu><button value="cancel" class="secondary">取消</button><button type="submit" class="primary">保存本地记录</button></menu>
+  </form></dialog>
+
+  <dialog id="mealModal"><form method="dialog" id="mealForm" class="modal">
+    <div class="modal-head"><div><p class="eyebrow">MEAL</p><h3>记录一餐</h3></div><button value="cancel" class="close">×</button></div>
+    <div class="form-grid three">
+      <label>日期<input name="date" type="date" required /></label>
+      <label>餐次<select name="mealType"><option>早餐</option><option>午餐</option><option selected>晚餐</option><option>加餐</option></select></label>
+      <label>名称<input name="name" placeholder="例如：牛肉饭" required /></label>
+      <label>kcal<input name="calories" type="number" /></label>
+      <label>蛋白质 g<input name="protein" type="number" step="0.1" /></label>
+      <label>碳水 g<input name="carbs" type="number" step="0.1" /></label>
+      <label>脂肪 g<input name="fat" type="number" step="0.1" /></label>
+    </div>
+    <menu><button value="cancel" class="secondary">取消</button><button type="submit" class="primary">保存</button></menu>
+  </form></dialog>
+
+  <dialog id="workoutModal"><form method="dialog" id="workoutForm" class="modal">
+    <div class="modal-head"><div><p class="eyebrow">WORKOUT</p><h3>记录运动</h3></div><button value="cancel" class="close">×</button></div>
+    <div class="form-grid three">
+      <label>日期<input name="date" type="date" required /></label>
+      <label>类型<input name="type" placeholder="跑步 / Zone 2 / 力量" required /></label>
+      <label>时长 min<input name="duration" type="number" /></label>
+      <label>距离 km<input name="distance" type="number" step="0.01" /></label>
+      <label>平均心率<input name="avgHr" type="number" /></label>
+      <label>备注<input name="notes" /></label>
+    </div>
+    <menu><button value="cancel" class="secondary">取消</button><button type="submit" class="primary">保存</button></menu>
+  </form></dialog>
+
+  <dialog id="bodyModal"><form method="dialog" id="bodyForm" class="modal">
+    <div class="modal-head"><div><p class="eyebrow">BODY METRIC</p><h3>记录身体指标</h3></div><button value="cancel" class="close">×</button></div>
+    <div class="form-grid three">
+      <label>日期<input name="date" type="date" required /></label>
+      <label>体重 kg<input name="weight" type="number" step="0.1" /></label>
+      <label>体脂 %<input name="bodyFat" type="number" step="0.1" /></label>
+      <label>VO₂max<input name="vo2max" type="number" step="0.1" /></label>
+      <label>静息心率<input name="restingHr" type="number" /></label>
+      <label>睡眠 h<input name="sleepHours" type="number" step="0.1" /></label>
+    </div>
+    <menu><button value="cancel" class="secondary">取消</button><button type="submit" class="primary">保存</button></menu>
+  </form></dialog>
+
+  <dialog id="inventoryModal"><form method="dialog" id="inventoryForm" class="modal">
+    <div class="modal-head"><div><p class="eyebrow">INVENTORY</p><h3>添加库存</h3></div><button value="cancel" class="close">×</button></div>
+    <div class="form-grid three">
+      <label>食物<input name="name" required /></label>
+      <label>数量<input name="quantity" type="number" step="0.01" required /></label>
+      <label>单位<select name="unit"><option>g</option><option>kg</option><option>个</option><option>盒</option><option>瓶</option></select></label>
+      <label>到期日<input name="expiryDate" type="date" /></label>
+      <label>每100g kcal<input name="kcal" type="number" /></label>
+      <label>每100g 蛋白<input name="protein" type="number" step="0.1" /></label>
+    </div>
+    <menu><button value="cancel" class="secondary">取消</button><button type="submit" class="primary">加入库存</button></menu>
+  </form></dialog>
 
   <div id="toast" class="toast"></div>
   <script src="app.js"></script>
