@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pantry Agent</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">PERSONAL FOOD SYSTEM</p>
+      <h1>Pantry Agent</h1>
+    </div>
+    <button id="resetDemoBtn" class="ghost">重置 Demo</button>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">TODAY</p>
+        <h2>先知道家里有什么，再决定吃什么。</h2>
+        <p class="muted">库存、食谱、营养与饮食记录放在同一个地方。</p>
+      </div>
+      <div class="hero-actions">
+        <button class="primary" data-open="inventoryModal">+ 添加库存</button>
+        <button class="secondary" data-open="mealModal">+ 记录一餐</button>
+      </div>
+    </section>
+
+    <section class="metrics" id="metrics"></section>
+
+    <section class="grid two">
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">INVENTORY</p>
+            <h3>当前库存</h3>
+          </div>
+          <button class="text-btn" data-open="inventoryModal">新增</button>
+        </div>
+        <div id="inventoryTable"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">AGENT</p>
+            <h3>今晚吃什么？</h3>
+          </div>
+          <button id="refreshRecipesBtn" class="text-btn">换一组</button>
+        </div>
+        <div id="recipeList" class="recipe-list"></div>
+      </article>
+    </section>
+
+    <section class="grid two">
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">MEAL LOG</p>
+            <h3>饮食记录</h3>
+          </div>
+          <button class="text-btn" data-open="mealModal">记录</button>
+        </div>
+        <div id="mealLog"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">IMPORT</p>
+            <h3>快速录入</h3>
+          </div>
+        </div>
+        <div class="import-grid">
+          <button class="import-card" id="imageImportBtn">
+            <span class="icon">◫</span>
+            <strong>图片识别</strong>
+            <small>拍包装 / 小票 / 冰箱</small>
+          </button>
+          <button class="import-card" id="emailImportBtn">
+            <span class="icon">✉</span>
+            <strong>邮箱订单</strong>
+            <small>读取网购买菜订单</small>
+          </button>
+        </div>
+        <p class="note">MVP 当前先保留入口；下一步接入真实图片识别与邮箱订单解析。</p>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="inventoryModal">
+    <form method="dialog" id="inventoryForm" class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">ADD FOOD</p>
+          <h3>添加库存</h3>
+        </div>
+        <button value="cancel" class="close">×</button>
+      </div>
+      <div class="form-grid">
+        <label>食物名称<input name="name" required placeholder="例如：瘦牛肉碎" /></label>
+        <label>数量<input name="quantity" type="number" step="0.01" required placeholder="900" /></label>
+        <label>单位
+          <select name="unit"><option>g</option><option>kg</option><option>个</option><option>盒</option><option>瓶</option></select>
+        </label>
+        <label>预计保质天数<input name="days" type="number" min="0" value="5" /></label>
+      </div>
+      <p class="section-label">每 100g 营养（可稍后修正）</p>
+      <div class="form-grid four">
+        <label>kcal<input name="kcal" type="number" step="0.1" value="150" /></label>
+        <label>蛋白质<input name="protein" type="number" step="0.1" value="20" /></label>
+        <label>碳水<input name="carbs" type="number" step="0.1" value="0" /></label>
+        <label>脂肪<input name="fat" type="number" step="0.1" value="7" /></label>
+      </div>
+      <menu>
+        <button value="cancel" class="secondary">取消</button>
+        <button type="submit" value="default" class="primary">加入库存</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="mealModal">
+    <form method="dialog" id="mealForm" class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">LOG MEAL</p>
+          <h3>记录一餐</h3>
+        </div>
+        <button value="cancel" class="close">×</button>
+      </div>
+      <label>餐次
+        <select name="mealType"><option>早餐</option><option>午餐</option><option selected>晚餐</option><option>加餐</option></select>
+      </label>
+      <div id="mealItems"></div>
+      <button type="button" id="addMealItemBtn" class="secondary wide">+ 添加食物</button>
+      <menu>
+        <button value="cancel" class="secondary">取消</button>
+        <button type="submit" value="default" class="primary">保存并扣库存</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <template id="mealItemTemplate">
+    <div class="meal-item-row">
+      <select class="food-select"></select>
+      <input class="food-amount" type="number" min="0" step="1" placeholder="克数" />
+      <button type="button" class="remove-row">×</button>
+    </div>
+  </template>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
